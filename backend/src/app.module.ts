@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GastosModule } from './gastos/gastos.module';
+import { MetasModule } from './metas/metas.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GastosModule } from './gastos/gastos.module';
       }),
     }),
     GastosModule,
+    MetasModule,
   ],
   controllers: [AppController],
   providers: [AppService],
