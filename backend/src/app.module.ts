@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { GastosModule } from './gastos/gastos.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AppService } from './app.service';
         uri: `mongodb://${configService.get<string>('MONGO_ROOT_USERNAME')}:${configService.get<string>('MONGO_ROOT_PASSWORD')}@${configService.get<string>('MONGO_HOST')}:${configService.get<string>('MONGO_PORT')}/${configService.get<string>('MONGO_DATABASE')}?authSource=admin`,
       }),
     }),
+    GastosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
