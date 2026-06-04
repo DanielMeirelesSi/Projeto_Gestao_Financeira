@@ -1,0 +1,106 @@
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { hash } from 'bcryptjs';
+import { Model } from 'mongoose';
+import { CreateUsuarioDto } from './dto/create-usuario.dto';
+import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { Usuario, UsuarioDocument } from './schemas/usuario.schema';
+
+@Injectable()
+export class UsuariosService {
+  constructor(
+    @InjectModel(Usuario.name)
+    private readonly usuarioModel: Model<UsuarioDocument>,
+  ) {}
+
+  async create(createUsuarioDto: CreateUsuarioDto) {
+    const usuarioExistente = await this.usuarioModel
+      .findOne({ usuario: createUsuarioDto.usuario.toLowerCase() })
+      .exec();
+
+    if (usuarioExistente) {
+      throw new ConflictException('Nome de usuário já cadastrado');
+    }
+
+    const senhaHash = await hash(createUsuarioDto.senha, 10);
+
+    const novoUsuario = await this.usuarioModel.create({
+      ...createUsuarioDto,
+      senha: senhaHash,
+      admin: false,
+    });
+
+    const usuarioSemSenha = novoUsuario.toObject();
+
+    Reflect.deleteProperty(usuarioSemSenha, 'senha');
+
+    return usuarioSemSenha;
+  }
+
+  async findAll(): Promise<Usuario[]> {
+    return this.usuarioModel
+      .find()
+      .select('-senha')
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  async findOne(id: string): Promise<Usuario> {
+    const usuario = await this.usuarioModel
+      .findById(id)
+      .select('-senha')
+      .exec();
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return usuario;
+  }
+
+  async update(
+    id: string,
+    updateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<Usuario> {
+    const dadosAtualizados = { ...updateUsuarioDto };
+
+    if (updateUsuarioDto.senha) {
+      dadosAtualizados.senha = await hash(updateUsuarioDto.senha, 10);
+    }
+
+    const usuario = await this.usuarioModel
+      .findByIdAndUpdate(id, dadosAtualizados, {
+        new: true,
+        runValidators: true,
+      })
+      .select('-senha')
+      .exec();
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return usuario;
+  }
+
+  async remove(id: string): Promise<void> {
+    const usuario = await this.usuarioModel.findByIdAndDelete(id).exec();
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+  }
+
+  async findByUsernameWithPassword(
+    usuario: string,
+  ): Promise<UsuarioDocument | null> {
+    return this.usuarioModel
+      .findOne({ usuario: usuario.toLowerCase() })
+      .select('+senha')
+      .exec();
+  }
+}

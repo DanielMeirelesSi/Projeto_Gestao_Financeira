@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GastosModule } from './gastos/gastos.module';
 import { MetasModule } from './metas/metas.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MetasModule } from './metas/metas.module';
     }),
     GastosModule,
     MetasModule,
+    UsuariosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
