@@ -44,6 +44,15 @@ export type DadosMeta = {
   dataLimite: string;
 };
 
+export type DadosCadastro = {
+  nome: string;
+  dataNascimento: string;
+  endereco: string;
+  usuario: string;
+  senha: string;
+  salario: number;
+};
+
 type LoginResponse = {
   message: string;
   usuario: Usuario;
@@ -104,6 +113,26 @@ export async function login(
 
   if (!response.ok) {
     throw new Error(data.message ?? 'Não foi possível realizar o login');
+  }
+
+  return data;
+}
+
+export async function cadastrarUsuario(
+  dados: DadosCadastro,
+): Promise<Usuario> {
+  const response = await fetch(`${API_URL}/usuarios`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message ?? 'Não foi possível realizar o cadastro');
   }
 
   return data;

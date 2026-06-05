@@ -1,5 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router';
+import './App.css';
 import ProtectedRoute from './components/ProtectedRoute';
+import CadastroPage from './pages/CadastroPage';
 import DashboardPage from './pages/DashboardPage';
 import GastosPage from './pages/GastosPage';
 import LoginPage from './pages/LoginPage';
@@ -9,6 +11,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/cadastro" element={<CadastroPage />} />
 
       <Route
         path="/dashboard"

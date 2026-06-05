@@ -541,3 +541,77 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+.auth-page {
+  align-items: center;
+  background: #06402b;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px 20px;
+}
+
+.register-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  max-width: 760px;
+  padding: 34px;
+  width: 100%;
+}
+
+.register-logo {
+  display: block;
+  margin: 0 auto 22px;
+  max-width: 210px;
+  width: 100%;
+}
+
+.register-intro {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.register-intro h1 {
+  color: #06402b;
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.register-intro p {
+  color: #667085;
+  margin: 0;
+}
+
+.register-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.register-submit-button {
+  margin-top: 22px;
+  width: 100%;
+}
+
+.auth-footer {
+  color: #667085;
+  font-size: 14px;
+  margin: 18px 0 0;
+  text-align: center;
+}
+
+.auth-footer a {
+  color: #0a7a50;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 680px) {
+  .register-grid {
+    grid-template-columns: 1fr;
+  }
+}
