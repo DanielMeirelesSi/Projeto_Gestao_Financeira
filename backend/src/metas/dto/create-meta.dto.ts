@@ -1,9 +1,10 @@
 import {
+  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
-  Matches,
   Min,
 } from 'class-validator';
 
@@ -13,7 +14,7 @@ export class CreateMetaDto {
   nome!: string;
 
   @IsNumber()
-  @Min(0.01)
+  @IsPositive()
   valorObjetivo!: number;
 
   @IsOptional()
@@ -21,13 +22,6 @@ export class CreateMetaDto {
   @Min(0)
   valorAtual?: number;
 
-  @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
-    message: 'dataLimite must follow the YYYY-MM-DD format',
-  })
+  @IsDateString()
   dataLimite!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  usuarioId!: string;
 }

@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import logoBranca from '../assets/logo-branca.png';
-import { buscarGastos } from '../services/api';
+import { buscarGastos, buscarMetas } from '../services/api';
 import type { Usuario } from '../services/api';
 
 function DashboardPage() {
   const navigate = useNavigate();
 
   const [totalGastos, setTotalGastos] = useState(0);
-  const [carregandoGastos, setCarregandoGastos] = useState(true);
-  const [erroGastos, setErroGastos] = useState('');
+  const [quantidadeMetas, setQuantidadeMetas] = useState(0);
+  const [carregandoResumo, setCarregandoResumo] = useState(true);
+  const [erroResumo, setErroResumo] = useState('');
 
   const usuarioSalvo = sessionStorage.getItem('usuario');
 
@@ -18,9 +19,12 @@ function DashboardPage() {
     : null;
 
   useEffect(() => {
-    async function carregarGastos() {
+    async function carregarResumo() {
       try {
-        const gastos = await buscarGastos();
+        const [gastos, metas] = await Promise.all([
+          buscarGastos(),
+          buscarMetas(),
+        ]);
 
         const total = gastos.reduce(
           (soma, gasto) => soma + gasto.valor,
@@ -28,19 +32,20 @@ function DashboardPage() {
         );
 
         setTotalGastos(total);
+        setQuantidadeMetas(metas.length);
       } catch (error) {
         const mensagemErro =
           error instanceof Error
             ? error.message
-            : 'Erro inesperado ao carregar gastos';
+            : 'Erro inesperado ao carregar o resumo';
 
-        setErroGastos(mensagemErro);
+        setErroResumo(mensagemErro);
       } finally {
-        setCarregandoGastos(false);
+        setCarregandoResumo(false);
       }
     }
 
-    carregarGastos();
+    carregarResumo();
   }, []);
 
   function handleLogout() {
@@ -105,7 +110,7 @@ function DashboardPage() {
             <span className="summary-label">Gastos registrados</span>
 
             <strong>
-              {carregandoGastos
+              {carregandoResumo
                 ? 'Carregando...'
                 : totalGastos.toLocaleString('pt-BR', {
                     style: 'currency',
@@ -113,13 +118,15 @@ function DashboardPage() {
                   })}
             </strong>
 
-            <small>{erroGastos || 'Total dos gastos cadastrados'}</small>
+            <small>Total dos gastos cadastrados</small>
           </article>
 
           <article className="summary-card">
             <span className="summary-label">Metas financeiras</span>
 
-            <strong>0</strong>
+            <strong>
+              {carregandoResumo ? 'Carregando...' : quantidadeMetas}
+            </strong>
 
             <small>Quantidade de metas cadastradas</small>
           </article>
@@ -130,7 +137,8 @@ function DashboardPage() {
             <h2>Resumo financeiro</h2>
 
             <p>
-              Futuros Dados
+              {erroResumo ||
+                'Dados.'}
             </p>
           </div>
 

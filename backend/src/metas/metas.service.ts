@@ -12,29 +12,28 @@ export class MetasService {
     private readonly metaModel: Model<MetaDocument>,
   ) {}
 
-  async create(createMetaDto: CreateMetaDto): Promise<Meta> {
-    return this.metaModel.create(createMetaDto);
+  async create(
+    usuarioId: string,
+    createMetaDto: CreateMetaDto,
+  ): Promise<Meta> {
+    return this.metaModel.create({
+      ...createMetaDto,
+      usuarioId,
+    });
   }
 
-  async findAll(): Promise<Meta[]> {
-    return this.metaModel.find().sort({ createdAt: -1 }).exec();
+  async findAll(usuarioId: string): Promise<Meta[]> {
+    return this.metaModel
+      .find({ usuarioId })
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
-  async findOne(id: string): Promise<Meta> {
-    const meta = await this.metaModel.findById(id).exec();
-
-    if (!meta) {
-      throw new NotFoundException('Meta não encontrada');
-    }
-
-    return meta;
-  }
-
-  async update(id: string, updateMetaDto: UpdateMetaDto): Promise<Meta> {
+  async findOne(id: string, usuarioId: string): Promise<Meta> {
     const meta = await this.metaModel
-      .findByIdAndUpdate(id, updateMetaDto, {
-        new: true,
-        runValidators: true,
+      .findOne({
+        _id: id,
+        usuarioId,
       })
       .exec();
 
@@ -45,8 +44,39 @@ export class MetasService {
     return meta;
   }
 
-  async remove(id: string): Promise<void> {
-    const meta = await this.metaModel.findByIdAndDelete(id).exec();
+  async update(
+    id: string,
+    usuarioId: string,
+    updateMetaDto: UpdateMetaDto,
+  ): Promise<Meta> {
+    const meta = await this.metaModel
+      .findOneAndUpdate(
+        {
+          _id: id,
+          usuarioId,
+        },
+        updateMetaDto,
+        {
+          new: true,
+          runValidators: true,
+        },
+      )
+      .exec();
+
+    if (!meta) {
+      throw new NotFoundException('Meta não encontrada');
+    }
+
+    return meta;
+  }
+
+  async remove(id: string, usuarioId: string): Promise<void> {
+    const meta = await this.metaModel
+      .findOneAndDelete({
+        _id: id,
+        usuarioId,
+      })
+      .exec();
 
     if (!meta) {
       throw new NotFoundException('Meta não encontrada');

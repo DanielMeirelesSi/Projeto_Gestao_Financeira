@@ -20,11 +20,32 @@ export type Gasto = {
   usuarioId: string;
 };
 
+export type Meta = {
+  _id: string;
+  nome: string;
+  valorObjetivo: number;
+  valorAtual: number;
+  dataLimite: string;
+  usuarioId: string;
+};
+
 type LoginResponse = {
   message: string;
   usuario: Usuario;
   accessToken: string;
 };
+
+function getAuthHeaders() {
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('Sessão expirada. Entre novamente.');
+  }
+
+  return {
+    Authorization: `Bearer ${accessToken}`,
+  };
+}
 
 export async function login(
   usuario: string,
@@ -51,22 +72,28 @@ export async function login(
 }
 
 export async function buscarGastos(): Promise<Gasto[]> {
-  const accessToken = sessionStorage.getItem('accessToken');
-
-  if (!accessToken) {
-    throw new Error('Sessão expirada. Entre novamente.');
-  }
-
   const response = await fetch(`${API_URL}/gastos`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
+    headers: getAuthHeaders(),
   });
 
   const data = await response.json();
 
   if (!response.ok) {
     throw new Error(data.message ?? 'Não foi possível carregar os gastos');
+  }
+
+  return data;
+}
+
+export async function buscarMetas(): Promise<Meta[]> {
+  const response = await fetch(`${API_URL}/metas`, {
+    headers: getAuthHeaders(),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message ?? 'Não foi possível carregar as metas');
   }
 
   return data;
