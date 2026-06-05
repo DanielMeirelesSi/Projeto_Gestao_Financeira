@@ -145,7 +145,7 @@ Não é necessário instalar Node.js ou MongoDB localmente para executar a aplic
 Clone o repositório:
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone -b entrega-tcs --single-branch https://github.com/DanielMeirelesSi/Projeto_Gestao_Financeira.git
 ```
 
 Acesse a pasta:
