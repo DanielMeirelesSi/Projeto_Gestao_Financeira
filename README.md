@@ -145,13 +145,19 @@ Não é necessário instalar Node.js ou MongoDB localmente para executar a aplic
 Clone o repositório:
 
 ```bash
-git clone -b entrega-tcs --single-branch https://github.com/DanielMeirelesSi/Projeto_Gestao_Financeira.git
+git clone https://github.com/DanielMeirelesSi/Projeto_Gestao_Financeira.git
 ```
 
 Acesse a pasta:
 
 ```bash
 cd Projeto_Gestao_Financeira
+```
+
+Altere a branch da entrega:
+
+```bash
+git switch entrega-tcs
 ```
 
 Crie o arquivo `.env` com base no modelo disponibilizado.
