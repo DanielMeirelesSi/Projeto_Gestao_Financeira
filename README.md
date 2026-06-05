@@ -264,6 +264,12 @@ docker compose down
 
 O fluxo principal foi validado manualmente:
 
+* clonagem pública do repositório em ambiente isolado;
+* acesso à branch `entrega-tcs`;
+* configuração do arquivo `.env`;
+* build e inicialização completa da aplicação com Docker Compose;
+* verificação do status saudável do container do MongoDB;
+* acesso ao frontend, backend e endpoint de health check;
 * cadastro de usuário;
 * login e logout;
 * acesso às rotas privadas;
@@ -273,8 +279,8 @@ O fluxo principal foi validado manualmente:
 * separação de dados entre usuários;
 * bloqueio de acesso não autorizado;
 * bloqueio da listagem completa de usuários para contas comuns;
-* persistência dos dados após a reinicialização dos containers;
-* inicialização completa da aplicação com Docker Compose.
+* persistência dos dados após a reinicialização dos containers.
+
 
 ## Referências consultadas
 
