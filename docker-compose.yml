@@ -39,6 +39,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
+  web:
+    build:
+      context: ./web
+    container_name: web
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+      
 volumes:
   mongo_data:
