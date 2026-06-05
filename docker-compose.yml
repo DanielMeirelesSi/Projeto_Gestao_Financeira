@@ -34,6 +34,8 @@ services:
     environment:
       MONGO_HOST: db
       MONGO_PORT: 27017
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
     depends_on:
       db:
         condition: service_healthy

@@ -1,10 +1,10 @@
 import {
+  IsDateString,
   IsIn,
   IsNotEmpty,
   IsNumber,
+  IsPositive,
   IsString,
-  Matches,
-  Min,
 } from 'class-validator';
 
 export class CreateGastoDto {
@@ -16,20 +16,14 @@ export class CreateGastoDto {
   @IsNotEmpty()
   categoria!: string;
 
+  @IsString()
   @IsIn(['Fixo', 'Variável', 'Obrigatório'])
   tipo!: 'Fixo' | 'Variável' | 'Obrigatório';
 
   @IsNumber()
-  @Min(0)
+  @IsPositive()
   valor!: number;
 
-  @IsString()
-  @Matches(/^\d{4}-\d{2}-\d{2}$/, {
-    message: 'data must follow the YYYY-MM-DD format',
-  })
+  @IsDateString()
   data!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  usuarioId!: string;
 }
