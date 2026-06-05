@@ -1,63 +1,309 @@
-# Nome do projeto
+# +Grana
 
-`CURSO: Sistemas de Informação`
+Aplicação web para organização financeira pessoal, com controle de gastos, acompanhamento de metas e visualização consolidada da situação financeira do usuário.
 
-`DISCIPLINA: Trabalho Interdisciplinar Aplicações Web`
+## Funcionalidades implementadas
 
-`1º semestre/2025`
+### Autenticação e usuários
 
-O projeto do grupo tem como objetivo oferecer suporte a pessoas em diferentes situações financeiras, desde aquelas que se encontram endividadas até aquelas que possuem recursos extras disponíveis e que não sabem como proceder. Para os primeiros, o objetivo é  proporcionar orientações que possibilitem a melhoria das condições e da situação de vulnerabilidade. Já para os que dispõem de recursos, o projeto pretende fornecer noções mais básicas de ensino sobre o funcionamento do cenário de investimentos, contribuindo para que façam escolhas mais assertivas e conscientes.
+* Cadastro público de novos usuários.
+* Login com geração de token JWT.
+* Armazenamento seguro de senhas com hash.
+* Envio do token pelo cabeçalho `Authorization`.
+* Proteção das rotas privadas com guard de autenticação.
+* Separação dos dados por usuário autenticado.
+* Bloqueio de acesso aos dados de outros usuários.
+* Listagem completa de usuários restrita a administradores.
+* Remoção da senha das respostas retornadas pela API.
 
-## Integrantes
+### Gastos
 
-* Bernardo Maia Lomas Ameno
-* Daniel Meireles Aquino Jorge
-* Danton Rodrigues Diniz
-* João Vitor Alves Amaral
-* João Vitor Vieira Guedes
-* João Victor Batista Carneiro
+* Cadastro de despesas.
+* Listagem dos gastos do usuário autenticado.
+* Edição de despesas.
+* Exclusão de despesas.
+* Categorias personalizadas.
+* Classificação por tipo:
 
-## Professor
+  * `Fixo`
+  * `Variável`
+  * `Obrigatório`
+* Atualização automática dos totais no dashboard.
 
-* Jardell Fillipe da Silva
+### Metas financeiras
 
-## Instruções de utilização
+* Cadastro de metas.
+* Definição de valor objetivo.
+* Registro do valor atual acumulado.
+* Definição de data limite.
+* Edição das informações.
+* Exclusão de metas.
+* Barra de progresso individual.
+* Atualização automática dos dados no dashboard.
 
-Não são necessárias ferramentas adicionas para utilização, apenas iniciar o servidor com npm start.
+### Dashboard
 
-O usuário admin para teste é:
-login: admin
-senha: admin123
+O dashboard reúne as principais informações financeiras em uma única tela:
 
+* salário mensal cadastrado;
+* total de gastos registrados;
+* saldo disponível;
+* quantidade de metas financeiras;
+* gráfico de gastos por categoria;
+* gráfico de evolução mensal dos gastos;
+* metas em andamento;
+* gastos mais recentes.
 
-# Hospedagem do site
-<!-- Colocar aqui o link do site -->
-Link de acesso para o site hospedado:
+## Tecnologias utilizadas
 
+### Backend
 
-# Documentação
+* Node.js
+* TypeScript
+* NestJS
+* MongoDB
+* Mongoose
+* JWT
+* bcryptjs
+* class-validator
 
-<ol>
-<li><a href="docs/01-Contexto.md"> Documentação de contexto</a></li>
-<li><a href="docs/02-Product-discovery.md"> Product discovery</a></li>
-<li><a href="docs/03-Product-design.md"> Product design</a></li>
-<li><a href="docs/04-Metodologia.md"> Metodologia</a></li>
-<li><a href="docs/05-Projeto-interface.md"> Projeto de interface</a></li>
-<li><a href="docs/06-Template-padrao.md"> Template padrão da aplicação</a></li>
-<li><a href="docs/07-Arquitetura-solucao.md"> Arquitetura da solução</a></li>
-<li><a href="docs/08-Plano-testes-software.md"> Plano de testes de software</a></li>
-<li><a href="docs/09-Registro-testes-software.md"> Registro de testes de software</a></li>
-<li><a href="docs/10-Referencias.md"> Referências</a></li>
-</ol>
+### Frontend
 
-# Código
+* React
+* TypeScript
+* Vite
+* React Router
+* Recharts
+* CSS
 
-* <a href="/src/public/homepage.html">Código</a>
+### Infraestrutura
 
-# Apresentação
-<!-- Colocar o pdf da apresentação nessa ref -->
-* <a href="/presentation/README.md">Apresentação do projeto</a>
+* Docker
+* Docker Compose
+* NGINX
 
+## Arquitetura da aplicação
 
-* **Pasta docs**: documentação completa do projeto;<!-- links em Registro de software -->
-* **Pasta presentation**: apresentação do projeto; <!-- Adicionar o vídeo em mp4 e slides em pdf -->
+A aplicação é executada com três containers:
+
+```text
+web -> React servido pelo NGINX 
+backend -> API NestJS 
+db -> MongoDB
+```
+
+O frontend é compilado com Vite e servido pelo NGINX.
+
+O backend centraliza as regras de negócio, a autenticação e o acesso ao banco de dados.
+
+O MongoDB utiliza um volume persistente para preservar os registros mesmo após a reinicialização dos containers.
+
+## Decisões técnicas
+
+### Autenticação
+
+Após o login, o backend gera um token JWT.
+
+O token é enviado nas requisições privadas pelo cabeçalho:
+
+```text
+Authorization: Bearer <token>
+```
+
+As rotas protegidas utilizam um guard de autenticação no backend.
+
+### Isolamento dos dados
+
+Os gastos e as metas não recebem o identificador do usuário diretamente pelo frontend.
+
+O backend identifica o usuário autenticado pelo token e vincula automaticamente os registros à conta correta.
+
+Essa abordagem impede que um usuário consulte, altere ou exclua registros pertencentes a outra conta.
+
+### Containers
+
+O frontend utiliza um build em múltiplos estágios:
+
+```text
+Node.js  → compila o projeto React
+NGINX    → serve os arquivos finais
+```
+
+O sistema completo pode ser iniciado com um único comando usando Docker Compose.
+
+## Como executar
+
+### Pré-requisitos
+
+* Git
+* Docker Desktop
+
+Não é necessário instalar Node.js ou MongoDB localmente para executar a aplicação com Docker.
+
+### Configuração
+
+Clone o repositório:
+
+```bash
+git clone <URL_DO_REPOSITORIO>
+```
+
+Acesse a pasta:
+
+```bash
+cd Projeto_Gestao_Financeira
+```
+
+Crie o arquivo `.env` com base no modelo disponibilizado.
+
+No PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+No Linux ou macOS:
+
+```bash
+cp .env.example .env
+```
+
+Preencha as variáveis do arquivo `.env`:
+
+```env
+MONGO_ROOT_USERNAME=your_username
+MONGO_ROOT_PASSWORD=your_password
+MONGO_DATABASE=grana
+MONGO_HOST=localhost
+MONGO_PORT=27017
+
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRES_IN=1d
+```
+
+### Inicialização
+
+Na raiz do projeto, execute:
+
+```bash
+docker compose up -d --build
+```
+
+O comando cria as imagens e inicia os serviços:
+
+```text
+backend
+db
+web
+```
+
+Após a inicialização, acesse:
+
+```text
+Frontend: http://localhost:5173
+Backend:  http://localhost:3000
+Health:   http://localhost:3000/health
+```
+
+Para conferir os containers ativos:
+
+```bash
+docker compose ps
+```
+
+Para visualizar os logs do backend:
+
+```bash
+docker compose logs backend --tail 30
+```
+
+Para encerrar os containers sem apagar os dados:
+
+```bash
+docker compose down
+```
+
+## Rotas principais
+
+### Frontend
+
+| Rota         | Descrição                    | Acesso      |
+| ------------ | ---------------------------- | ----------- |
+| `/login`     | Login                        | Público     |
+| `/cadastro`  | Cadastro de usuário          | Público     |
+| `/dashboard` | Resumo financeiro e gráficos | Autenticado |
+| `/gastos`    | Gerenciamento de gastos      | Autenticado |
+| `/metas`     | Gerenciamento de metas       | Autenticado |
+
+### API
+
+| Método   | Endpoint        | Descrição                      | Acesso                           |
+| -------- | --------------- | ------------------------------ | -------------------------------- |
+| `POST`   | `/auth/login`   | Login e geração do JWT         | Público                          |
+| `POST`   | `/usuarios`     | Cadastro de usuário            | Público                          |
+| `GET`    | `/usuarios`     | Listagem de usuários           | Administrador                    |
+| `GET`    | `/usuarios/:id` | Consulta de usuário            | Próprio usuário ou administrador |
+| `PATCH`  | `/usuarios/:id` | Atualização de usuário         | Próprio usuário ou administrador |
+| `DELETE` | `/usuarios/:id` | Exclusão de usuário            | Próprio usuário ou administrador |
+| `POST`   | `/gastos`       | Cadastro de gasto              | Autenticado                      |
+| `GET`    | `/gastos`       | Listagem dos gastos do usuário | Autenticado                      |
+| `PATCH`  | `/gastos/:id`   | Atualização de gasto           | Autenticado                      |
+| `DELETE` | `/gastos/:id`   | Exclusão de gasto              | Autenticado                      |
+| `POST`   | `/metas`        | Cadastro de meta               | Autenticado                      |
+| `GET`    | `/metas`        | Listagem das metas do usuário  | Autenticado                      |
+| `PATCH`  | `/metas/:id`    | Atualização de meta            | Autenticado                      |
+| `DELETE` | `/metas/:id`    | Exclusão de meta               | Autenticado                      |
+
+## Testes realizados
+
+O fluxo principal foi validado manualmente:
+
+* cadastro de usuário;
+* login e logout;
+* acesso às rotas privadas;
+* cadastro, edição e exclusão de gastos;
+* cadastro, edição e exclusão de metas;
+* atualização automática do dashboard;
+* separação de dados entre usuários;
+* bloqueio de acesso não autorizado;
+* bloqueio da listagem completa de usuários para contas comuns;
+* persistência dos dados após a reinicialização dos containers;
+* inicialização completa da aplicação com Docker Compose.
+
+## Referências consultadas
+
+### NestJS
+
+* [Authentication](https://docs.nestjs.com/security/authentication)
+* [Authorization](https://docs.nestjs.com/security/authorization)
+* [Guards](https://docs.nestjs.com/guards)
+* [Validation](https://docs.nestjs.com/techniques/validation)
+* [MongoDB com Mongoose](https://docs.nestjs.com/techniques/mongodb)
+* [Configuration](https://docs.nestjs.com/techniques/configuration)
+* [Circular dependency](https://docs.nestjs.com/fundamentals/circular-dependency)
+
+### Docker
+
+* [Multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
+* [Compose Build Specification](https://docs.docker.com/reference/compose-file/build/)
+* [Services no Docker Compose](https://docs.docker.com/reference/compose-file/services/)
+* [Control startup order](https://docs.docker.com/compose/how-tos/startup-order/)
+
+### Frontend
+
+* [Vite](https://vite.dev/guide/)
+* [React Router](https://reactrouter.com/start/declarative/installation)
+* [React Router: Navigating](https://reactrouter.com/start/declarative/navigating)
+* [Recharts](https://recharts.github.io/)
+* [ResponsiveContainer](https://recharts.github.io/en-US/api/ResponsiveContainer/)
+* [NGINX: diretiva try_files](https://nginx.org/en/docs/http/ngx_http_core_module.html)
+
+### Segurança
+
+* [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+* [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html)
+* [OWASP REST Security Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/REST_Security_Cheat_Sheet.html)
+
+## Autor
+
+Daniel Meireles
