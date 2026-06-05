@@ -29,6 +29,14 @@ export type Meta = {
   usuarioId: string;
 };
 
+export type DadosGasto = {
+  descricao: string;
+  categoria: string;
+  tipo: 'Fixo' | 'Variável' | 'Obrigatório';
+  valor: number;
+  data: string;
+};
+
 type LoginResponse = {
   message: string;
   usuario: Usuario;
@@ -45,6 +53,29 @@ function getAuthHeaders() {
   return {
     Authorization: `Bearer ${accessToken}`,
   };
+}
+
+async function requestAutenticada<T>(
+  endpoint: string,
+  options: RequestInit = {},
+): Promise<T> {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      ...getAuthHeaders(),
+      ...options.headers,
+    },
+  });
+
+  const textoResposta = await response.text();
+
+  const data = textoResposta ? JSON.parse(textoResposta) : null;
+
+  if (!response.ok) {
+    throw new Error(data?.message ?? 'Não foi possível concluir a operação');
+  }
+
+  return data as T;
 }
 
 export async function login(
@@ -72,29 +103,38 @@ export async function login(
 }
 
 export async function buscarGastos(): Promise<Gasto[]> {
-  const response = await fetch(`${API_URL}/gastos`, {
-    headers: getAuthHeaders(),
+  return requestAutenticada<Gasto[]>('/gastos');
+}
+
+export async function criarGasto(dados: DadosGasto): Promise<Gasto> {
+  return requestAutenticada<Gasto>('/gastos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados),
   });
+}
 
-  const data = await response.json();
+export async function atualizarGasto(
+  id: string,
+  dados: Partial<DadosGasto>,
+): Promise<Gasto> {
+  return requestAutenticada<Gasto>(`/gastos/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados),
+  });
+}
 
-  if (!response.ok) {
-    throw new Error(data.message ?? 'Não foi possível carregar os gastos');
-  }
-
-  return data;
+export async function excluirGasto(id: string): Promise<void> {
+  return requestAutenticada<void>(`/gastos/${id}`, {
+    method: 'DELETE',
+  });
 }
 
 export async function buscarMetas(): Promise<Meta[]> {
-  const response = await fetch(`${API_URL}/metas`, {
-    headers: getAuthHeaders(),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message ?? 'Não foi possível carregar as metas');
-  }
-
-  return data;
+  return requestAutenticada<Meta[]>('/metas');
 }

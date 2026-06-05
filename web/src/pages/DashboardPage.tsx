@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import logoBranca from '../assets/logo-branca.png';
+import AppHeader from '../components/AppHeader';
 import { buscarGastos, buscarMetas } from '../services/api';
 import type { Usuario } from '../services/api';
 
 function DashboardPage() {
-  const navigate = useNavigate();
-
   const [totalGastos, setTotalGastos] = useState(0);
   const [quantidadeMetas, setQuantidadeMetas] = useState(0);
   const [carregandoResumo, setCarregandoResumo] = useState(true);
@@ -48,43 +45,9 @@ function DashboardPage() {
     carregarResumo();
   }, []);
 
-  function handleLogout() {
-    sessionStorage.removeItem('usuario');
-    sessionStorage.removeItem('accessToken');
-    navigate('/login');
-  }
-
   return (
     <main className="dashboard-page">
-      <header className="dashboard-header">
-        <div className="dashboard-header-content">
-          <div className="dashboard-brand">
-            <img
-              className="dashboard-logo"
-              src={logoBranca}
-              alt="+Grana - Organização financeira e controle de gastos"
-            />
-
-            <nav className="dashboard-nav">
-              <span className="nav-item nav-item-active">Visão geral</span>
-              <span className="nav-item nav-item-disabled">Gastos</span>
-              <span className="nav-item nav-item-disabled">Metas</span>
-            </nav>
-          </div>
-
-          <div className="dashboard-user">
-            <span>Olá, {usuario?.nome}</span>
-
-            <button
-              className="logout-button"
-              type="button"
-              onClick={handleLogout}
-            >
-              Sair
-            </button>
-          </div>
-        </div>
-      </header>
+      <AppHeader paginaAtiva="dashboard" />
 
       <section className="dashboard-content">
         <section className="dashboard-hero">
