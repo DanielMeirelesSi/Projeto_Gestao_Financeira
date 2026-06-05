@@ -16,6 +16,7 @@ function DashboardPage() {
 
   function handleLogout() {
     sessionStorage.removeItem('usuario');
+    sessionStorage.removeItem('accessToken');
     navigate('/login');
   }
 

@@ -22,7 +22,8 @@ function LoginPage() {
     try {
       const response = await login(usuario, senha);
 
-      sessionStorage.setItem('usuario', JSON.stringify(response.usuario));
+        sessionStorage.setItem('usuario', JSON.stringify(response.usuario));
+        sessionStorage.setItem('accessToken', response.accessToken);
 
       navigate('/dashboard');
     } catch (error) {

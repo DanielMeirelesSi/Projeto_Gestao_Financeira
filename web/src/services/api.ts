@@ -1,16 +1,19 @@
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
 
+export type Usuario = {
+  _id: string;
+  nome: string;
+  dataNascimento: string;
+  endereco: string;
+  usuario: string;
+  salario: number;
+  admin: boolean;
+};
+
 type LoginResponse = {
   message: string;
-  usuario: {
-    _id: string;
-    nome: string;
-    dataNascimento: string;
-    endereco: string;
-    usuario: string;
-    salario: number;
-    admin: boolean;
-  };
+  usuario: Usuario;
+  accessToken: string;
 };
 
 export async function login(
