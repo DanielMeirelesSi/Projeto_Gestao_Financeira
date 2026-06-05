@@ -1,18 +1,47 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import logoBranca from '../assets/logo-branca.png';
-
-type Usuario = {
-  nome: string;
-  salario: number;
-};
+import { buscarGastos } from '../services/api';
+import type { Usuario } from '../services/api';
 
 function DashboardPage() {
   const navigate = useNavigate();
 
+  const [totalGastos, setTotalGastos] = useState(0);
+  const [carregandoGastos, setCarregandoGastos] = useState(true);
+  const [erroGastos, setErroGastos] = useState('');
+
   const usuarioSalvo = sessionStorage.getItem('usuario');
+
   const usuario: Usuario | null = usuarioSalvo
     ? JSON.parse(usuarioSalvo)
     : null;
+
+  useEffect(() => {
+    async function carregarGastos() {
+      try {
+        const gastos = await buscarGastos();
+
+        const total = gastos.reduce(
+          (soma, gasto) => soma + gasto.valor,
+          0,
+        );
+
+        setTotalGastos(total);
+      } catch (error) {
+        const mensagemErro =
+          error instanceof Error
+            ? error.message
+            : 'Erro inesperado ao carregar gastos';
+
+        setErroGastos(mensagemErro);
+      } finally {
+        setCarregandoGastos(false);
+      }
+    }
+
+    carregarGastos();
+  }, []);
 
   function handleLogout() {
     sessionStorage.removeItem('usuario');
@@ -26,9 +55,9 @@ function DashboardPage() {
         <div className="dashboard-header-content">
           <div className="dashboard-brand">
             <img
-                className="dashboard-logo"
-                src={logoBranca}
-                alt="+Grana - Organização financeira e controle de gastos"
+              className="dashboard-logo"
+              src={logoBranca}
+              alt="+Grana - Organização financeira e controle de gastos"
             />
 
             <nav className="dashboard-nav">
@@ -75,9 +104,16 @@ function DashboardPage() {
           <article className="summary-card">
             <span className="summary-label">Gastos registrados</span>
 
-            <strong>R$ 0,00</strong>
+            <strong>
+              {carregandoGastos
+                ? 'Carregando...'
+                : totalGastos.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+            </strong>
 
-            <small>Total dos gastos cadastrados</small>
+            <small>{erroGastos || 'Total dos gastos cadastrados'}</small>
           </article>
 
           <article className="summary-card">
@@ -94,12 +130,11 @@ function DashboardPage() {
             <h2>Resumo financeiro</h2>
 
             <p>
-              Seus gastos e metas aparecerão aqui assim que conectarmos os dados
-              cadastrados no sistema.
+              Futuros Dados
             </p>
           </div>
 
-          <span className="panel-status">Em construção</span>
+          <span className="panel-status">...</span>
         </section>
       </section>
     </main>

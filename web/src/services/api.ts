@@ -10,6 +10,16 @@ export type Usuario = {
   admin: boolean;
 };
 
+export type Gasto = {
+  _id: string;
+  descricao: string;
+  categoria: string;
+  tipo: 'Fixo' | 'Variável' | 'Obrigatório';
+  valor: number;
+  data: string;
+  usuarioId: string;
+};
+
 type LoginResponse = {
   message: string;
   usuario: Usuario;
@@ -35,6 +45,28 @@ export async function login(
 
   if (!response.ok) {
     throw new Error(data.message ?? 'Não foi possível realizar o login');
+  }
+
+  return data;
+}
+
+export async function buscarGastos(): Promise<Gasto[]> {
+  const accessToken = sessionStorage.getItem('accessToken');
+
+  if (!accessToken) {
+    throw new Error('Sessão expirada. Entre novamente.');
+  }
+
+  const response = await fetch(`${API_URL}/gastos`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message ?? 'Não foi possível carregar os gastos');
   }
 
   return data;
