@@ -18,8 +18,14 @@ export class UsuariosService {
   ) {}
 
   async create(createUsuarioDto: CreateUsuarioDto) {
+    const usuarioNormalizado = createUsuarioDto.usuario
+      .trim()
+      .toLowerCase();
+
     const usuarioExistente = await this.usuarioModel
-      .findOne({ usuario: createUsuarioDto.usuario.toLowerCase() })
+      .findOne({
+        usuario: usuarioNormalizado,
+      })
       .exec();
 
     if (usuarioExistente) {
@@ -29,8 +35,12 @@ export class UsuariosService {
     const senhaHash = await hash(createUsuarioDto.senha, 10);
 
     const novoUsuario = await this.usuarioModel.create({
-      ...createUsuarioDto,
+      nome: createUsuarioDto.nome,
+      dataNascimento: createUsuarioDto.dataNascimento,
+      endereco: createUsuarioDto.endereco,
+      usuario: usuarioNormalizado,
       senha: senhaHash,
+      salario: createUsuarioDto.salario,
       admin: false,
     });
 
@@ -45,7 +55,9 @@ export class UsuariosService {
     return this.usuarioModel
       .find()
       .select('-senha')
-      .sort({ createdAt: -1 })
+      .sort({
+        createdAt: -1,
+      })
       .exec();
   }
 
@@ -66,7 +78,45 @@ export class UsuariosService {
     id: string,
     updateUsuarioDto: UpdateUsuarioDto,
   ): Promise<Usuario> {
-    const dadosAtualizados = { ...updateUsuarioDto };
+    const dadosAtualizados: Record<string, unknown> = {};
+
+    if (updateUsuarioDto.nome !== undefined) {
+      dadosAtualizados.nome = updateUsuarioDto.nome;
+    }
+
+    if (updateUsuarioDto.dataNascimento !== undefined) {
+      dadosAtualizados.dataNascimento =
+        updateUsuarioDto.dataNascimento;
+    }
+
+    if (updateUsuarioDto.endereco !== undefined) {
+      dadosAtualizados.endereco = updateUsuarioDto.endereco;
+    }
+
+    if (updateUsuarioDto.salario !== undefined) {
+      dadosAtualizados.salario = updateUsuarioDto.salario;
+    }
+
+    if (updateUsuarioDto.usuario !== undefined) {
+      const usuarioNormalizado = updateUsuarioDto.usuario
+        .trim()
+        .toLowerCase();
+
+      const usuarioExistente = await this.usuarioModel
+        .findOne({
+          _id: {
+            $ne: id,
+          },
+          usuario: usuarioNormalizado,
+        })
+        .exec();
+
+      if (usuarioExistente) {
+        throw new ConflictException('Nome de usuário já cadastrado');
+      }
+
+      dadosAtualizados.usuario = usuarioNormalizado;
+    }
 
     if (updateUsuarioDto.senha) {
       dadosAtualizados.senha = await hash(updateUsuarioDto.senha, 10);
@@ -99,7 +149,9 @@ export class UsuariosService {
     usuario: string,
   ): Promise<UsuarioDocument | null> {
     return this.usuarioModel
-      .findOne({ usuario: usuario.toLowerCase() })
+      .findOne({
+        usuario: usuario.trim().toLowerCase(),
+      })
       .select('+senha')
       .exec();
   }

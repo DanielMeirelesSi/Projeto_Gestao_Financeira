@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from '../auth/auth.module';
 import { UsuariosController } from './usuarios.controller';
 import { UsuariosService } from './usuarios.service';
 import { Usuario, UsuarioSchema } from './schemas/usuario.schema';
@@ -12,6 +13,7 @@ import { Usuario, UsuarioSchema } from './schemas/usuario.schema';
         schema: UsuarioSchema,
       },
     ]),
+    forwardRef(() => AuthModule),
   ],
   controllers: [UsuariosController],
   providers: [UsuariosService],
