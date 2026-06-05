@@ -1,80 +1,24 @@
-import { useState } from 'react';
-import type { SyntheticEvent } from 'react';
-import './App.css';
-import logoGrana from './assets/logo.png';
-import { login } from './services/api';
+import { Navigate, Route, Routes } from 'react-router';
+import ProtectedRoute from './components/ProtectedRoute';
+import DashboardPage from './pages/DashboardPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
-  const [usuario, setUsuario] = useState('');
-  const [senha, setSenha] = useState('');
-  const [mensagem, setMensagem] = useState('');
-  const [carregando, setCarregando] = useState(false);
-
-  async function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    setMensagem('');
-    setCarregando(true);
-
-    try {
-      const response = await login(usuario, senha);
-
-      setMensagem(`Bem-vindo, ${response.usuario.nome}!`);
-    } catch (error) {
-      const mensagemErro =
-        error instanceof Error ? error.message : 'Erro inesperado';
-
-      setMensagem(mensagemErro);
-    } finally {
-      setCarregando(false);
-    }
-  }
-
   return (
-    <main className="page">
-      <section className="login-card">
-        <img
-          className="logo"
-          src={logoGrana}
-          alt="+Grana - Organização financeira e controle de gastos"
-        />
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
 
-        <div className="login-header">
-          <h1>Entrar</h1>
-          <p>Acesse sua conta para acompanhar seus gastos e metas.</p>
-        </div>
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
 
-        <form onSubmit={handleSubmit}>
-          <label>
-            Usuário
-            <input
-              type="text"
-              value={usuario}
-              onChange={(event) => setUsuario(event.target.value)}
-              placeholder="Digite seu usuário"
-              required
-            />
-          </label>
-
-          <label>
-            Senha
-            <input
-              type="password"
-              value={senha}
-              onChange={(event) => setSenha(event.target.value)}
-              placeholder="Digite sua senha"
-              required
-            />
-          </label>
-
-          <button type="submit" disabled={carregando}>
-            {carregando ? 'Entrando...' : 'Entrar'}
-          </button>
-        </form>
-
-        {mensagem && <p className="message">{mensagem}</p>}
-      </section>
-    </main>
+      <Route path="/" element={<Navigate to="/login" replace />} />
+    </Routes>
   );
 }
 
