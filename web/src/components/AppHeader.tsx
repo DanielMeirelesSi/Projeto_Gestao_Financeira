@@ -43,7 +43,14 @@ function AppHeader({ paginaAtiva }: AppHeaderProps) {
               Gastos
             </NavLink>
 
-            <span className="nav-item nav-item-disabled">Metas</span>
+            <NavLink
+              className={`nav-item nav-link ${
+                paginaAtiva === 'metas' ? 'nav-item-active' : ''
+              }`}
+              to="/metas"
+            >
+              Metas
+            </NavLink>
           </nav>
         </div>
 

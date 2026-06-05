@@ -37,6 +37,13 @@ export type DadosGasto = {
   data: string;
 };
 
+export type DadosMeta = {
+  nome: string;
+  valorObjetivo: number;
+  valorAtual: number;
+  dataLimite: string;
+};
+
 type LoginResponse = {
   message: string;
   usuario: Usuario;
@@ -137,4 +144,33 @@ export async function excluirGasto(id: string): Promise<void> {
 
 export async function buscarMetas(): Promise<Meta[]> {
   return requestAutenticada<Meta[]>('/metas');
+}
+
+export async function criarMeta(dados: DadosMeta): Promise<Meta> {
+  return requestAutenticada<Meta>('/metas', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados),
+  });
+}
+
+export async function atualizarMeta(
+  id: string,
+  dados: Partial<DadosMeta>,
+): Promise<Meta> {
+  return requestAutenticada<Meta>(`/metas/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(dados),
+  });
+}
+
+export async function excluirMeta(id: string): Promise<void> {
+  return requestAutenticada<void>(`/metas/${id}`, {
+    method: 'DELETE',
+  });
 }
